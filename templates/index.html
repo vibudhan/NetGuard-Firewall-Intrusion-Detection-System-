@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Real-time Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Total Packets</h6>
+                        <h3 class="text-white mb-0" id="total-packets">0</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-network-wired fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Blocked Packets</h6>
+                        <h3 class="text-white mb-0" id="blocked-packets">0</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-ban fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-dark">Active Alerts</h6>
+                        <h3 class="text-dark mb-0" id="active-alerts">0</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-exclamation-triangle fa-2x text-dark"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-white-50">Block Rate</h6>
+                        <h3 class="text-white mb-0" id="block-rate">0%</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-shield-alt fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-line me-2"></i>Traffic Analysis
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="traffic-chart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Protocol Distribution
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="protocol-chart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Dashboard Sections -->
+<div class="row">
+    <!-- Live Alerts Section -->
+    <div class="col-lg-6">
+        <div class="card" id="alerts">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Recent Alerts
+                </h5>
+                <div>
+                    <select class="form-select form-select-sm me-2" id="alert-severity-filter" style="width: auto; display: inline-block;">
+                        <option value="">All Severities</option>
+                        <option value="critical">Critical</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="exportAlerts()">
+                        <i class="fas fa-download me-1"></i>Export
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Time</th>
+                                <th>Severity</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alerts-table">
+                            <!-- Alerts will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="no-alerts" class="text-center py-4 text-muted" style="display: none;">
+                    <i class="fas fa-info-circle fa-2x mb-2"></i>
+                    <p>No alerts to display</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top IPs and Ports -->
+    <div class="col-lg-6">
+        <div class="card" id="traffic">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-network-wired me-2"></i>Top Activity
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Top Source IPs</h6>
+                        <div id="top-ips">
+                            <!-- Top IPs will be populated here -->
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Top Destination Ports</h6>
+                        <div id="top-ports">
+                            <!-- Top ports will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Firewall Rules Section -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card" id="firewall">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-fire me-2"></i>Firewall Rules
+                </h5>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-rule-modal">
+                    <i class="fas fa-plus me-1"></i>Add Rule
+                </button>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Priority</th>
+                                <th>Type</th>
+                                <th>Value</th>
+                                <th>Action</th>
+                                <th>Description</th>
+                                <th>Hits</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="firewall-rules-table">
+                            <!-- Firewall rules will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Live Activity Feed -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card" id="dashboard">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-tachometer-alt me-2"></i>Live Network Activity
+                </h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="pauseLiveFeed()" id="pause-btn">
+                        <i class="fas fa-pause me-1"></i>Pause
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="clearLiveFeed()">
+                        <i class="fas fa-trash me-1"></i>Clear
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div id="live-activity" class="live-feed">
+                    <!-- Live activity will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Rule Modal -->
+<div class="modal fade" id="add-rule-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Firewall Rule</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="add-rule-form">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="rule-type" class="form-label">Rule Type</label>
+                        <select class="form-select" id="rule-type" required>
+                            <option value="">Select rule type...</option>
+                            <option value="ip">IP Address</option>
+                            <option value="subnet">Subnet/Network</option>
+                            <option value="port">Port</option>
+                            <option value="protocol">Protocol</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="rule-value" class="form-label">Value</label>
+                        <input type="text" class="form-control" id="rule-value" required 
+                               placeholder="e.g., 192.168.1.1, 80, TCP">
+                        <div class="form-text">
+                            Examples: IP: 192.168.1.1, Subnet: 192.168.1.0/24, Port: 80 or 80-90, Protocol: TCP
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="rule-action" class="form-label">Action</label>
+                        <select class="form-select" id="rule-action" required>
+                            <option value="">Select action...</option>
+                            <option value="allow">Allow</option>
+                            <option value="block">Block</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="rule-description" class="form-label">Description</label>
+                        <textarea class="form-control" id="rule-description" rows="2" 
+                                  placeholder="Optional description for this rule"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Rule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Initialize dashboard when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initializeDashboard();
+});
+</script>
+{% endblock %}

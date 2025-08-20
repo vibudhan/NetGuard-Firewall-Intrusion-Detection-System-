@@ -1,0 +1,263 @@
+/* Custom styles for Network Security Monitor */
+
+/* Live activity feed styling */
+.live-feed {
+    max-height: 400px;
+    overflow-y: auto;
+    background-color: #1a1a1a;
+    border-radius: 0.375rem;
+    padding: 0;
+}
+
+.activity-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #333;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    transition: background-color 0.3s ease;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-item.new-item {
+    background-color: rgba(13, 202, 240, 0.1);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.activity-item.blocked {
+    border-left: 4px solid #dc3545;
+}
+
+.activity-item.threat {
+    border-left: 4px solid #ffc107;
+}
+
+.activity-item.allowed {
+    border-left: 4px solid #198754;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; background-color: rgba(13, 202, 240, 0.3); }
+    to { opacity: 1; background-color: rgba(13, 202, 240, 0.1); }
+}
+
+/* Alert severity badges */
+.severity-critical {
+    background-color: #6f42c1 !important;
+}
+
+.severity-high {
+    background-color: #dc3545 !important;
+}
+
+.severity-medium {
+    background-color: #fd7e14 !important;
+}
+
+.severity-low {
+    background-color: #20c997 !important;
+}
+
+/* Top activity lists */
+.activity-list-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.activity-list-item:last-child {
+    border-bottom: none;
+}
+
+.activity-progress {
+    width: 60px;
+    height: 4px;
+    background-color: #333;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.activity-progress-bar {
+    height: 100%;
+    background-color: var(--bs-primary);
+    transition: width 0.3s ease;
+}
+
+/* Connection status indicator */
+#connection-status.connected {
+    color: #198754 !important;
+}
+
+#connection-status.disconnected {
+    color: #dc3545 !important;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Chart containers */
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+/* Toast notifications */
+.toast.alert-toast {
+    min-width: 300px;
+}
+
+.toast.alert-critical {
+    border-left: 4px solid #6f42c1;
+}
+
+.toast.alert-high {
+    border-left: 4px solid #dc3545;
+}
+
+.toast.alert-medium {
+    border-left: 4px solid #fd7e14;
+}
+
+.toast.alert-low {
+    border-left: 4px solid #20c997;
+}
+
+/* Table enhancements */
+.table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.075);
+}
+
+.rule-enabled {
+    color: #198754;
+}
+
+.rule-disabled {
+    color: #6c757d;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .live-feed {
+        max-height: 250px;
+    }
+    
+    .activity-item {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .card-body {
+        padding: 1rem 0.75rem;
+    }
+}
+
+/* Scrollbar styling for webkit browsers */
+.live-feed::-webkit-scrollbar {
+    width: 8px;
+}
+
+.live-feed::-webkit-scrollbar-track {
+    background: #2d2d2d;
+}
+
+.live-feed::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+.live-feed::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+/* Loading states */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Status indicators */
+.status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+.status-active {
+    background-color: #198754;
+}
+
+.status-blocked {
+    background-color: #dc3545;
+}
+
+.status-warning {
+    background-color: #ffc107;
+}
+
+/* Card hover effects */
+.card:hover {
+    transform: translateY(-2px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Metric cards */
+.metric-card {
+    background: linear-gradient(135deg, var(--bs-primary), var(--bs-primary-dark));
+    border: none;
+    color: white;
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.metric-label {
+    opacity: 0.8;
+    font-size: 0.875rem;
+}
+
+/* Alert action buttons */
+.alert-actions {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.activity-item:hover .alert-actions,
+tr:hover .alert-actions {
+    opacity: 1;
+}
+
+/* Form enhancements */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Button groups */
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
